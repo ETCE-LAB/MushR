@@ -1,0 +1,429 @@
+:PROPERTIES:
+:ID:       3733c2ed-6d2a-433d-829f-105ee944b569
+:END:
+#+title: MushR: Camera Setup: Installation Guide
+#+author: Anant Sujatanagarjuna
+
+It is reccommended follow the following steps *IN ORDER*.
+
+* Software Installation
+** Operating System
+- The setup has only been tested with Raspberry Pi OS 32-bit on a
+  Rpi4B (the version at the time of writing this guide is:
+  https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2022-09-26/)
+
+- Follow [[https://www.raspberrypi.com/software/][this guide]] to install your desired OS version.
+
+- Be sure to enable the SSH daemon and test that you are able to
+  remotely log in to each pi using the password you chose during
+  install.
+  #+begin_src sh
+    sudo systemctl enable sshd.service
+  #+end_src
+
+- Please also enable autologin (desktop/TTY) at least for [[Tent2Pi]]
+
+  For [[Tent1Pi]] and [[Tent2Pi]], you must verify whether the cameras are
+  functioning using [[https://www.raspberrypi.com/documentation/computers/camera_software.html][this guide]] (might require a monitor and keyboard
+  connected using a micro-HDMI cable).
+
+- Clone the MushR project repository [[https://gitlab.tu-clausthal.de/dfb12/mushr][mushr.git]], in all pis. Copy all
+  the scripts inside the "camera-setup" directory inside a new
+  directory "~/scripts" on each pi.
+
+- Ensure that the latest version of wiringpi is installed on [[Tent1Pi]]
+  and [[Tent2Pi]].
+
+  #+begin_src sh
+    cd /tmp
+    wget https://project-downloads.drogon.net/wiringpi-latest.deb
+    sudo dpkg -i wiringpi-latest.deb
+  #+end_src
+
+  You might have to install =wget=:
+  #+begin_src sh
+    sudo apt install wget
+  #+end_src
+
+- Install imagemagick on [[Tent1Pi]] and [[Tent2Pi]].
+  #+begin_src sh
+    sudo apt install imagemagick
+  #+end_src
+
+
+- The "camera-setup" folder contains all the scripts required for
+  taking images. Briefly summarized, the main scripts are:
+  1. =arducam_multicamera.py= : Library used for taking images using
+     the [[https://www.arducam.com/product/multi-camera-v2-1-adapter-raspberry-pi/][Arducam Multicamera Board V2.2]]. This script is based on
+     [[https://github.com/ArduCAM/RaspberryPi/tree/master/Multi_Camera_Adapter/Multi_Adapter_Board_4Channel]].
+
+     To change the way images are captured, you can create/edit the
+     camera preset commands =FULL=, =PREVIEW= and =LOW=. More
+     specifically, you must change =--awbgain= whenever the colour of
+     the lights inside the tents is changed. This is used to manually
+     change the colour balance of the images.
+
+  2. =mushrimager-multicam-noremote.sh=,
+     =mushrimager-multicam-bothtents.sh= and
+     =mushrimager-multicam-previewer.sh= are the currently relevant
+     scripts for taking images.
+
+  3. =turn-off-lights.sh= and =turn-on-lights.sh= are used to control
+     the lights.
+
+- Ensure that these scripts are executable
+  #+begin_src sh
+    chmod 755 <path to file>.sh
+  #+end_src
+- Note down the IP address of all raspberry pis.
+  #+begin_src sh
+    ip a | grep wlan
+  #+end_src
+ 
+*** Tent1Pi
+Tent1Pi will be connected to the cameras 1A, 1B and 1C in Tent1.
+
+1. Ensure that =mushrimager-multicam-noremote.sh= is functional.
+
+   
+     
+*** LightingPi
+
+The LightingPi uses a reverse engineered RGB5050 remote configuration
+to control the RGB5050 lights in the tents.
+
+**** Wiring the KY005/KY-022
+
+Refer to this [[https://uelectronics.com/wp-content/uploads/2017/06/KY-005-Joy-IT.pdf][manual]] for general instructions, *however,* Lots of
+stuff there about the installation and initial configuration is
+*OUTDATED*. Use this guide instead (last tested 12.12.2022).
+
+Generally, connect 5V and GND on either the KY-022 (when reverse
+engineering a remote) or the KY005 (When using the rpi as a spoof of
+the remote) to a 5V/GND pin on the raspberry pi respectively.
+
+Connect GPIO pin 17 OR 18 on the raspberrypi to the KY-022/KY005
+respectively, depending on which one is needed. The KY-022 is only
+needed for [[IR Remote Reverse Engineering][reverse engineering the remote]], and is not needed later.
+
+
+***** KY-005/KY-022 Configuration
+
+in /boot/config.txt: uncomment the following lines, and customize the
+pins accordingly, then REBOOT
+
+#+begin_src conf
+  dtoverlay=gpio-ir,gpio_pin=17	 # for receiving data
+  dtoverlay=gpio-ir-tx,gpio_pin=18   # for sending commands
+#+end_src
+
+****** KY-022 Only
+Test that the receiver is working:
+
+#+begin_src sh
+  sudo apt update
+  sudo apt install ir-keytable
+#+end_src
+
+#+begin_src sh
+  sudo ir-keytable -c -p all -t
+#+end_src
+
+Then use some IR remote to send events to the IR receiver. The events
+should be displayed if all connections are correct.
+
+**** Installing Lirc
+
+- State "LOGGED" from [2022-08-18 Thu 14:12] \\
+  As of today, lirc0 defaults to the transmitter, and lirc1 is the
+  receiver
+  
+#+begin_src sh
+  sudo apt install lirc
+#+end_src
+
+For setting up lirc for future IR transmitters
+Edit /etc/lirc/lirc_options.conf and change the appropriate lines to
+the following, and REBOOT:
+#+begin_src conf
+
+  ...
+  driver	=	default
+  ...
+  device	=	/dev/lirc0
+#+end_src
+
+For the receiver,
+
+#+begin_src sh
+  sudo systemctl stop lircd.service
+  sudo mode2 -d /dev/lirc1
+#+end_src
+
+**** IR Remote Reverse Engineering
+
+#+begin_src sh
+  irrecord -d /dev/lirc1 ~/IR-Codes-RGB5050-remote.conf
+#+end_src
+
+When prompted, you can use key codes from the following:
+
+#+begin_src sh
+  irrecord -l 
+#+end_src
+
+Copy the file to /etc/lirc/lircd.conf, after backing up the original.
+
+**** IR Remote spoofing
+
+***** To view available commands,
+
+#+begin_src sh
+  irsend LIST <name of the remote set in lircd.conf> ""
+#+end_src
+
+***** To send a signal ONCE
+
+#+begin_src sh
+  irsend SEND_ONCE <name of the remote set in lircd.conf> <name of command>
+#+end_src
+
+***** To start sending a signal continuously
+#+begin_src sh
+  irsend SEND_START <name of the remote set in lircd.conf> <name of command>
+#+end_src
+
+***** To stop sending the previous continuous signal
+#+begin_src sh
+  irsend SEND_STOP <name of the remote set in lircd.conf> <name of command>
+#+end_src
+
+**** Current lircd config
+
+The currently configured /etc/lirc/lircd.conf file is as follows:
+
+#+begin_src conf
+
+  # Please take the time to finish this file as described in
+  # https://sourceforge.net/p/lirc-remotes/wiki/Checklist/
+  # and make it available to others by sending it to
+  # <lirc@bartelmus.de>
+  #
+  # This config file was automatically generated
+  # using lirc-0.10.1(default) on Thu Aug 18 12:47:46 2022
+  # Command line used: -d /dev/lirc1 /home/mushr/IR-codes-RGB5050-remote.conf
+  # Kernel version (uname -r): 5.15.56-v7l+
+  #
+  # Remote name (as of config file): RGB5050remote
+  # Brand of remote device, the thing you hold in your hand:
+  # Remote device model nr:
+  # Remote device info url:
+  # Does remote device has a bundled capture device e. g., a
+  #     usb dongle? :
+  # For bundled USB devices: usb vendor id, product id
+  #     and device string (use dmesg or lsusb):
+  # Type of device controlled
+  #     (TV, VCR, Audio, DVD, Satellite, Cable, HTPC, ...) :
+  # Device(s) controlled by this remote:
+
+  begin remote
+
+    name  RGB5050remote
+    bits           24
+    flags SPACE_ENC|CONST_LENGTH
+    eps            30
+    aeps          100
+
+    header       9059  4411
+    one           647  1577
+    zero          647   481
+    ptrail        645
+    repeat       9050  2157
+    pre_data_bits   8
+    pre_data       0x0
+    gap          107539
+    toggle_bit_mask 0x0
+    frequency    38000
+
+        begin codes
+            KEY_POWER2               0xF7C03F 0x000000
+            KEY_POWER                0xF740BF 0x000000
+            KEY_BRIGHTNESSDOWN       0xF7807F 0x000000
+            KEY_BRIGHTNESSUP         0xF700FF 0x000000
+            KEY_PROG1                0xF7E01F 0x000000
+            KEY_BLUE                 0xF7609F 0x000000
+            KEY_GREEN                0xF7A05F 0x000000
+            KEY_RED                  0xF720DF 0x000000
+            KEY_YELLOW               0xF7906F 0x000000
+        end codes
+
+  end remote
+
+#+end_src
+
+*** Tent2Pi
+Tent1Pi will be connected to the cameras 1A, 1B and 1C in Tent1, and
+also needs to be able to connect to [[Tent1Pi]] and [[LightingPi]]
+
+While logged in to this pi,
+
+1. [[https://www.ssh.com/academy/ssh/keygen][Generate an ssh key]]. e.g,
+
+   #+begin_src sh
+     ssh-keygen -t ed25519
+   #+end_src
+
+2. Use [[https://www.ssh.com/academy/ssh/keygen][ssh-copy-id]] to be able to access the other pis. e.g,
+
+   #+begin_src sh
+     ssh-copy-id ~/ssh/ed25519 pi@<ip address of Tent1Pi>
+     ssh-copy-id ~/ssh/ed25519 pi@<ip address of LightingPi>
+   #+end_src
+
+3. In =mushrimager-multicam-bothtents.py=, you must change the IP
+   addresses and usernames of [[Tent1Pi]] and [[LightingPi]] in order for this
+   script to function correctly.
+
+4. Create a file "tucloud.txt" in the same folder with the credentials
+   for the tucloud account as follows:
+
+   #+begin_src text
+     machine tucloud.tu-clausthal.de login <username> password <password>
+   #+end_src
+
+   Custom keys also work.
+
+5. Ensure that the system time is accurate, as the time is used to
+   name the image files.
+
+6. With [[Tent1Pi]] and [[LightingPi]] also configured correctly, test the
+   script =mushrimager-multicam-bothtents.py= without any arguments.
+
+7. Create a [[https://wiki.archlinux.org/title/Cron][cronjob]] for running this script periodically.
+   #+begin_src sh
+     crontab -e
+   #+end_src
+
+   For example, this line will take an image every 15 minutes.
+   #+begin_src text
+   */15    *       *       *       *       /home/pi/scripts/mushrimager-multicam-bothtents.sh
+   #+end_src
+
+8. Enable the user crontab as follows (this is the reason autologin is
+   necessary):
+   #+begin_src sh
+     systemctl --user enable cron.service
+   #+end_src
+
+9. Software installation is complete.
+
+* Hardware Installation Guide
+** Focus adjustment
+
+1. Please refer to [[https://datasheets.raspberrypi.com/hq-camera/cs-mount-lens-guide.pdf][this official guide]] for attaching the lens to the HQ
+   camera board.
+
+2. Measure the desired focal length needed for the cameras.
+   
+3. The backfocus adjustment and lens focus adjustment must be
+   calibrated manually for each camera based on the desired focus
+   length. This process is repetitive (trial and error), and would
+   require taking multiple images, hence depends upon [[Software
+   Installation]].
+
+4. You can start a live preview for individual cameras using the
+   =arducam_multicamera.py= script. (Run =python3
+   arducam_multicamera.py -h= for details)
+
+** Waterproofing the cameras
+
+There are two 3d printed parts used per camera.
+
+- The *Grey part* is used to hold the lens inside the dome case. (Only
+  fits the 120° Wide angle lens). It must be secured with a bit of
+  duct tape along it's edges (to create a spongy, but more tight fit)
+  inside the [[https://amzn.eu/d/iZtZ2rX][Camera Dome Case]], aligning the holes for the lens to
+  capture images through. A small strip of cardboard might be required
+  to fit this inside the dome case. *It is important that this part is
+  tightly secured.*
+  
+- The *Green part* keeps the camera board and lens in place at a 90°
+  angle. The purpose of the 90° angle placement is to maximize the
+  vertical field of view of the captured images, since the tents are
+  more tall than they are wide.
+
+- The HQ camera board should be mounted so that the 200cm flex cable
+  exits the camera board at a 90° angle. (Here is a nice [[https://thepihut.com/blogs/raspberry-pi-tutorials/how-to-replace-the-raspberry-pi-camera-cable][guide]] for
+  connecting the cable to the camera board) *PS: Be very careful with
+  the black connector*. It is possible to damage it in such a way that
+  it does not hold the ribbon cable anymore. For the same reason, do
+  not pull too much on the ribbon cable while it is connected.
+
+- (Optional) A small silica gel pack can be fit right behind the
+  camera board to prevent accidental spillage.
+
+- Use a plastic sheet to waterproof the rest of the camera board from
+  the outside (with a healthy amount of duct tape :). Connect one side
+  of the 200cm flex cable before sealing it (for obvious reasons).
+
+- *It is important to not fold/damage the cable in any way.*
+
+** Installing the cameras in the tents
+
+*** Installing the aluminium mounts
+
+Two aluminium mounts (L=Long & S=short) are used (per tent) to mount
+the center facing camera (1.B & 2.B).
+
+1. The aluminium mounts are currently mounted to the tents using zip
+   ties.
+
+2. They are already screwed in together (thanks to Johannes!)
+
+3. Mount L needs to be hung vertically, (relatively) in the center of
+   each tent. The angle does not have to be perfect.
+
+4. Mount S needs to be zip tied to either the left or the right side
+   of the tent. *PS: It can be beneficial to keep both zip ties a bit
+   loose, to be able to move them around while changing camera
+   angles.*
+
+5. Mount S would probably have to be duct-taped to the side of the
+   tent to keep it in place.
+
+*** Clamping the cameras
+
+1. Loosen the ball and socket joint of the [[https://amzn.eu/d/8iBo7e4][clamp]].
+2. Screw in the clamp to the bottom of the Dome Case. (Do this outside
+   the tent, since a bit of rubber residue tends to rub off when doing
+   this.)
+3. With the ball and socket joint still slightly loose (*but still
+   holding the dome case firmly*), clamp the setup to any desired
+   location. You might have to experiment a little bit to get the
+   camera lens as far away from the mushrooms inside the tent as
+   possible.
+4. Once a desired angle is reached, tighten the ball and socket joint
+   using the screw.
+
+** Raspberry Pi <-> Camera connection
+
+1. Thread the ribbon cables through any desired port (tent port).
+
+2. Connect the Multicamera board ports "A", "B" and "C" to the ribbon
+   cables connected to the camera housing labelled "X.A", "X.B", "X.C".
+
+   Here, X is either 1 or 2 depending on which tent the camera
+   housing is in.
+
+3. There is a visual hardware assembly guide in drawer "#2".
+
+4. Power on the raspberry pi.
+
+
+
+
+** Lighting Setup
+- Make sure that the RGB5050 lights are set to "yellow".
+
+- The RGB5050 receiver should also be positioned to be able to receive
+  signals from [[LightingPi]].
