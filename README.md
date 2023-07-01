@@ -1,6 +1,6 @@
 # MushR
 
-- [Growchamber Setup](GrowChamber Setup Documentation)
+- [Growchamber Setup](./GrowChamber Setup Documentation)
 - Automated Image Capture
 - MushR Digital Twin
 -- MushR Digital Twin API
