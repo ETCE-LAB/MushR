@@ -45,8 +45,7 @@ It is reccommended follow the following steps **IN ORDER**.
     functioning using [this guide](https://www.raspberrypi.com/documentation/computers/camera_software.html) (might require a monitor and keyboard
     connected using a micro-HDMI cable).
 
--   Clone the MushR project repository [mushr.git](https://gitlab.tu-clausthal.de/dfb12/mushr), in all pis. Copy all
-    the scripts inside the "camera-setup" directory inside a new
+-   Copy all the (required) scripts from this repository inside a new
     directory "~/scripts" on each pi.
 
 -   Ensure that the latest version of wiringpi is installed on [1.1.1](#orgb3c0dfb)
@@ -333,7 +332,7 @@ While logged in to this pi,
 
 ## Waterproofing the cameras
 
-There are two 3d printed parts used per camera.
+There are two [3d printed parts](CAD/)used per camera.
 
 -   The **Grey part** is used to hold the lens inside the dome case. (Only
     fits the 120° Wide angle lens). It must be secured with a bit of
