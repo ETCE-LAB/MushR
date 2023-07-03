@@ -1,8 +1,13 @@
 # Environment Monitor for MushR  with Humidity controller, Temperature Controller, and Cheese Effect while capturing Photo 
 
+
 Mushrooms grow in a humid and warm environment. for optimal growth of mushrooms humidity and temperature has to be maintained at higher levels to support proper growth.
  
 To control humidity and Temperature, MushR used Mycodo (https://github.com/kizniche/Mycodo)  with a mushr specific feature we call, "Cheese Effect". This is implemented to remove noise from the captured photo caused due to high humidity inside the tent. MushR cameras capture images every hour so this effect is effective from 10 minutes before the turn of the hour to 2 minutes past. Also see (https://github.com/ETCE-LAB/MushR/tree/grow-chamber-documentation#automated-image-capture).
+
+#### List of Contributors
+	
+1. Harish Gundelli
 
 #### Required Hardware
 
@@ -58,6 +63,3 @@ Step 6
    [click here](function/readme.md)
     
 
-#### List of Contributors
-
-1. Harish Gundelli
