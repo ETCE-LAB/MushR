@@ -1,7 +1,7 @@
 # MushR
 
-- [Growchamber Setup](growchamber-setup/README.md)
-- Automated Image Capture
+- [Growchamber Setup](growchamber-setup/)
+- [Automated Image Capture](automated-image-capture/)
 - MushR Digital Twin
  - MushR Digital Twin API
  - MushR Digital Twin UI
