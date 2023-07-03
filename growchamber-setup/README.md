@@ -37,25 +37,25 @@ step 4.
   
   Configure the DHT22 sensors as Inputs in the mycodo using the following tutorial
   
-   [click here](https://gitlab.tu-clausthal.de/dfb12/mushr/-/blob/aaae1b53de83139358eecb16e80096e475ca8e80/Humidity%20Controller-Mycodo/documentation/input/readme.md)
+   [click here](input/readme.md)
   
 Step 5
    Configure the smart plugs as outputs in the mycodo using the following tutorial
    
-   [click here](https://gitlab.tu-clausthal.de/dfb12/mushr/-/blob/43042e0cc0f757dcadd925f720d857d58d6e3c2a/Humidity%20Controller-Mycodo/documentation/smartplugs/readme.md)
+   [click here](smartplugs/readme.md)
    
    Smart plugs are used for turning on/off the humidifiers when required
    
 Step 6
 
    try reading the simple algorithm before you start the next tutorial
-   [click here](https://gitlab.tu-clausthal.de/dfb12/mushr/-/blob/43042e0cc0f757dcadd925f720d857d58d6e3c2a/Humidity%20Controller-Mycodo/documentation/overview%20algo/readme.md)
+   [click here](overview%20algo/readme.md)
    
    Step 6.1 
    
    Configure humidity control as function in mycodo
      
-   [click here](https://gitlab.tu-clausthal.de/dfb12/mushr/-/blob/43042e0cc0f757dcadd925f720d857d58d6e3c2a/Humidity%20Controller-Mycodo/documentation/function/readme.md)
+   [click here](function/readme.md)
     
 
 #### List of Contributors
