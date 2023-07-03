@@ -66,7 +66,3 @@ step 13. Click on live measurements option in dropdown box
 step 14.newly added DHT22 sensor will display the values in the current screen
 ![image](https://user-images.githubusercontent.com/121457303/213939012-15e21206-076d-4331-bafb-eb0ca70de936.png)
 Final screen with DHT22 sensor displaying the current measurements
-
-
-
-

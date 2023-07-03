@@ -41,24 +41,42 @@ Screenshot step 8
 
 Code for step 8
 
+```python
+   #  Copyright (C) 2022, 2023 Harish Gundelli
+    
+   #  This program is free software: you can redistribute it and/or modify
+   #  it under the terms of the GNU Affero General Public License as
+   #  published by the Free Software Foundation, either version 3 of the
+   #  License, or (at your option) any later version.
+    
+   #  This program is distributed in the hope that it will be useful,
+   #  but WITHOUT ANY WARRANTY; without even the implied warranty of
+   #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   #  GNU Affero General Public License for more details.
+    
+   #  You should have received a copy of the GNU Affero General Public License
+   #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-            now = datetime.now()
-            min1 = now.strftime("%M")
-            mini=int(min1)
-            self.logger.info("This INFO log entry will appear in the Daemon Log")
-            self.run_loop_count += 1  #Counts how many times the run code has been executed
-            measurement = self.condition("a0792977")   # Replace ID with correct Conditional ID
-            self.logger.info(f"Measurement value is {measurement}")
-            if mini > 50:
-            self.run_action("81dd30f8", message=self.message)
-            if measurement is not None:  # If a measurement exists
-            self.message += "This message appears in email alerts and notes.\n"
-            if measurement < 82:  # If the measurement is less than 85
-            if mini < 50:
-            if mini > 2:
-                self.message += f"Measurement is too Low! Measurement is {measurement} and outside photo period\n"
-                self.run_action("d29201ec", message=self.message)  # Run all actions sequentially
-            elif measurement > 87:  # Else If the measurement is greater than 90
-            self.message += f"Measurement is too High! Measurement is {measurement}\n"
-            #Replace "qwer5678" with an Action ID
-            self.run_action("81dd30f8", message=self.message)
+
+	        
+   now = datetime.now()
+   min1 = now.strftime("%M")
+   mini=int(min1)
+   self.logger.info("This INFO log entry will appear in the Daemon Log")
+   self.run_loop_count += 1  #Counts how many times the run code has been executed
+   measurement = self.condition("a0792977")   # Replace ID with correct Conditional ID
+   self.logger.info(f"Measurement value is {measurement}")
+   if mini > 50:
+   self.run_action("81dd30f8", message=self.message)
+   if measurement is not None:  # If a measurement exists
+   self.message += "This message appears in email alerts and notes.\n"
+   if measurement < 82:  # If the measurement is less than 85
+   if mini < 50:
+   if mini > 2:
+       self.message += f"Measurement is too Low! Measurement is {measurement} and outside photo period\n"
+       self.run_action("d29201ec", message=self.message)  # Run all actions sequentially
+   elif measurement > 87:  # Else If the measurement is greater than 90
+   self.message += f"Measurement is too High! Measurement is {measurement}\n"
+   #Replace "qwer5678" with an Action ID
+   self.run_action("81dd30f8", message=self.message)
+   ```

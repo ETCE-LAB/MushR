@@ -64,22 +64,36 @@ step 10.	Then Click on the "Off Command" field and delete all its contents then 
 ![image](https://user-images.githubusercontent.com/121457303/213940751-469b5a36-8012-4b3d-ba0c-4940eabd25c2.png)
 <p align=”center”>Step 10 Screenshot </p>
          
-#start of off code snippet
+#off code snippet
+```python
+   #  Copyright (C) 2022, 2023 Harish Gundelli
+    
+   #  This program is free software: you can redistribute it and/or modify
+   #  it under the terms of the GNU Affero General Public License as
+   #  published by the Free Software Foundation, either version 3 of the
+   #  License, or (at your option) any later version.
+    
+   #  This program is distributed in the hope that it will be useful,
+   #  but WITHOUT ANY WARRANTY; without even the implied warranty of
+   #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   #  GNU Affero General Public License for more details.
+    
+   #  You should have received a copy of the GNU Affero General Public License
+   #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-            sys.path.insert(1, '/usr/local/lib/python3.9/dist-packages')
-            from PyP100 import PyP100
-            log_string = "ID: {id}: OFF".format(id=output_id)
-            self.logger.info(log_string)
-            p100 = PyP100.P100("smart plug ip address", "tplink user id", "password") #Creating a P100 plug object ,replace ip address and userid , password.
 
-            p100.handshake() #Creates the cookies required for further methods
-            p100.login() #Sends credentials to the plug and creates AES Key and IV for further methods
+   sys.path.insert(1, '/usr/local/lib/python3.9/dist-packages')
+   from PyP100 import PyP100
+   log_string = "ID: {id}: OFF".format(id=output_id)
+   self.logger.info(log_string)
+   p100 = PyP100.P100("smart plug ip address", "tplink user id", "password") #Creating a P100 plug object ,replace ip address and userid , password.
 
-            p100.turnOff() #Sends the turn off request
-            p100.getDeviceInfo()
+   p100.handshake() #Creates the cookies required for further methods
+   p100.login() #Sends credentials to the plug and creates AES Key and IV for further methods
 
-#end of off code snippet
-
+   p100.turnOff() #Sends the turn off request
+   p100.getDeviceInfo()
+```
 
 Step 11.	Click on save button and wait for the mycodo then click on the close button  
           ![image](https://user-images.githubusercontent.com/121457303/213940877-c886ec60-db7a-465d-bf0c-3dee49c2a0ff.png)
