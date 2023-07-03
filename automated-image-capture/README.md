@@ -63,7 +63,7 @@ It is reccommended follow the following steps **IN ORDER**.
     
         sudo apt install imagemagick
 
--   The "camera-setup" folder contains all the scripts required for
+-   This folder contains all the scripts required for
     taking images. Briefly summarized, the main scripts are:
     1.  `arducam_multicamera.py` : Library used for taking images using
         the [Arducam Multicamera Board V2.2](https://www.arducam.com/product/multi-camera-v2-1-adapter-raspberry-pi/). This script is based on
