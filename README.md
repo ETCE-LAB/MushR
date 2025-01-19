@@ -1,3 +1,5 @@
+<img src="https://github.com/user-attachments/assets/b224c767-b70b-446c-80b1-a0bad5ab402f" width="300">
+
 # MushR
 
 MushR is a modular and scalable gourmet mushroom growing and
